@@ -224,12 +224,14 @@ def compress_vm(
     return True
 
 
+
 def list_vm_info(
     self: "PyMemuc",
     vm_index: Union[int, None] = None,
     vm_name: Union[str, None] = None,
     running: bool = False,
     disk_info: bool = False,
+    timeout: Union[int, None] = None,
 ) -> list[VMInfo]:
     """List VM info, must specify either a vm index or a vm name
 
@@ -241,6 +243,8 @@ def list_vm_info(
     :type running: bool, optional
     :param disk_info: Whether to list disk info. Defaults to False.
     :type disk_info: bool, optional
+    :param timeout: Timeout for the command. Defaults to None.
+    :type timeout: int, optional
     :raises PyMemucIndexError: an error if neither a vm index or a vm name is specified
     :return: a list of VM info, each VM info is a dictionary with the following keys:
                                 index: VM index
@@ -260,7 +264,8 @@ def list_vm_info(
                 "listvms",
                 "-r" if running else "",
                 "-s" if disk_info else "",
-            ]
+            ],
+            timeout=timeout,
         )
     elif vm_name is not None:
         _, output = self.memuc_run(
@@ -270,11 +275,13 @@ def list_vm_info(
                 "listvms",
                 "-r" if running else "",
                 "-s" if disk_info else "",
-            ]
+            ],
+            timeout=timeout,
         )
     else:
         _, output = self.memuc_run(
-            ["listvms", "-r" if running else "", "-s" if disk_info else ""]
+            ["listvms", "-r" if running else "", "-s" if disk_info else ""],
+            timeout=timeout,
         )
 
     # handle when no VMs are on the system
